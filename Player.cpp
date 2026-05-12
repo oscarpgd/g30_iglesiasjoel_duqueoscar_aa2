@@ -1,6 +1,6 @@
 #include "Player.h"
 
-void Player::update(char** matrix, int maxRows, int maxCols) {
+void Player::Update(char** matrix, int maxRows, int maxCols, People** people, int numPeople) {
     int nextX = x;
     int nextY = y;
 
@@ -22,10 +22,26 @@ void Player::update(char** matrix, int maxRows, int maxCols) {
     }
 
     // Colision
-    if (nextY >= 0 && nextY < maxRows && nextX >= 0 && nextX < maxCols) {
-        if (matrix[nextY][nextX] != 'X') {
-            x = nextX;
-            y = nextY;
+    if (nextY >= 0 && nextY < maxRows && nextX >= 0 && nextX < maxCols) 
+    {
+        //Comprobaciónes de pared
+        if (matrix[nextY][nextX] != 'X') 
+        {
+            //Comprobaciones de paton
+            bool occupiedByPed = false;
+            for (int i = 0; i < numPeople; i++) {
+                if (people[i]->GetIsAlive() &&
+                    people[i]->GetPos().x == nextX &&
+                    people[i]->GetPos().y == nextY) {
+                    occupiedByPed = true;
+                    break;
+                }
+            }
+
+            if (!occupiedByPed) {
+                x = nextX;
+                y = nextY;
+            }
         }
     }
 }

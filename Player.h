@@ -3,20 +3,25 @@
 
 #include <Windows.h> 
 #include "Types.h"
+#include "People.h"
 
 class Player {
 private:
     int x, y;
     char symbol;
+    int money;
 
 public:
-    Player(int startX, int startY) : x(startX), y(startY), symbol('^') {} 
+    Player(int startX, int startY) : x(startX), y(startY), symbol('^'), money(0) {}
 
-    int getX() const { return x; }
-    int getY() const { return y; }
-    char getSymbol() const { return symbol; }
+    //Getes
+    int GetX() const { return x; }
+    int GetY() const { return y; }
+    char GetSymbol() const { return symbol; }
+    int GetMoney() { return money; }
+    void AddMoney(int amount) { money += amount; }
 
-    void update(char** matrix, int maxRows, int maxCols);
+    void Update(char** matrix, int maxRows, int maxCols, People** people, int numPeople);
 };
 
 #endif

@@ -4,35 +4,33 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include "People.h"
+#include "Player.h"
 
 class Map {
 private:
     char** matrix;     
     int rows;           
-    int cols;           
+    int cols;
+    IslandConfig islands[2];
 
 public:
     Map();
-    ~Map(); // Esta es para liberar memoriaa
+    ~Map();
 
-    bool loadConfig(const std::string& filename);
+    bool LoadConfig(const std::string& filename);
 
-    void initMatrix();
+    void InitMatrix();
 
-    void printFullMap();
+    void PrintFullMap();
 
-    int getRows() const { return rows; }
-    int getCols() const { return cols; }
-    char** getMatrix() { return matrix; }
+    //Geters
+    int GetRows() const { return rows; }
+    int GetCols() const { return cols; }
+    char** GetMatrix() { return matrix; }
+    IslandConfig GetIslandData(int index) const { return islands[index]; }
 
-
-    void printView(int playerX, int playerY, char playerSymbol);
-    //static const int VIEW_SIZE = 10; // Radio de visión
-
-
-    
-
-    
+    void PrintView(int playerX, int playerY, char playerSymbol, People** peds, int numPeds, Player player);
 };
 
 #endif

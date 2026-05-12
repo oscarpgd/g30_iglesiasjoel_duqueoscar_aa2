@@ -12,21 +12,33 @@ Map::~Map() {
     }
 }
 
-bool Map::loadConfig(const std::string& filename) {
+bool Map::LoadConfig(const std::string& filename) {
     std::ifstream file(filename);
     if (!file.is_open()) return false;
 
-    std::string value;
-    // Lee ancho y alto
-    if (std::getline(file, value, ';')) cols = std::stoi(value);
-    if (std::getline(file, value, ';')) rows = std::stoi(value);
+    std::string val;
+
+    // liena 1 dimensiones
+    std::getline(file, val, ';'); cols = std::stoi(val);
+    std::getline(file, val, ';'); rows = std::stoi(val);
+
+    //info isla 1
+    std::getline(file, val, ';'); islands[0].numPeople = std::stoi(val);
+    std::getline(file, val, ';'); islands[0].price = std::stoi(val);
+    std::getline(file, val, ';'); islands[0].maxMoneyPerPeo = std::stoi(val);
+
+    //info isla 2
+    std::getline(file, val, ';'); islands[1].numPeople = std::stoi(val);
+    std::getline(file, val, ';'); islands[1].price = std::stoi(val);
+    std::getline(file, val, ';'); islands[1].maxMoneyPerPeo = std::stoi(val);
+    //USo de stoi para convertir string a int
 
     file.close();
-    initMatrix();
+    InitMatrix();
     return true;
 }
 
-void Map::initMatrix() {
+void Map::InitMatrix() {
     // Hacemos un x3 porque en ancho son 3 islas puestas al lado, en largo da igual porque abajo no hay
     int realCols = (cols * 3) + 2;
 
@@ -43,28 +55,29 @@ void Map::initMatrix() {
             }
         }
     }
-
     
     int wall1 = cols;      // Fin de Los Santos
     int wall2 = cols * 2 + 1; // Fin de San Fierro
 
     for (int i = 0; i < rows; ++i) {
         matrix[i][wall1] = 'X'; 
-            matrix[i][wall2] = 'X'; 
+        matrix[i][wall2] = 'X'; 
     }
 
     // Puentes
     int bridgePos = rows / 2;
     matrix[bridgePos][wall1] = ' ';
-        matrix[bridgePos][wall2] = ' '; 
+    matrix[bridgePos][wall2] = ' '; 
 
         
-        this->cols = realCols;
+    this->cols = realCols;
 }
 
-void Map::printFullMap() {
+void Map::PrintFullMap() 
+{
     if (matrix == nullptr) return;
 
+    //doble bucle para x e y
     for (int i = 0; i < rows; ++i) {
         for (int j = 0; j < cols; ++j) {
             std::cout << matrix[i][j];
@@ -73,39 +86,54 @@ void Map::printFullMap() {
     }
 }
 
-void Map::printView(int playerX, int playerY, char playerSymbol) {
+void Map::PrintView(int playerX, int playerY, char playerSymbol, People** peds, int numPeds, Player player) 
+{
+    int radiusY = 8;  // Alto de la vista
+    int radiusX = 15; // Ancho de la vista
 
-    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-    COORD coord = { 0, 0 };
-    SetConsoleCursorPosition(hOut, coord);
 
-    
-    int viewRadiusY = 10; // Alto de la vista
-    int viewRadiusX = 20; // Ancho de la vista, es mas que la Y porq la consola no es cuadrada, es rectangular
+    int startY = playerY - radiusY;
+    int endY = playerY + radiusY;
+    int startX = playerX - radiusX;
+    int endX = playerX + radiusX;
 
-    int startY = playerY - viewRadiusY;
-    int endY = playerY + viewRadiusY;
-    int startX = playerX - viewRadiusX;
-    int endX = playerX + viewRadiusX;
-
-    for (int i = startY; i <= endY; ++i) {
-        for (int j = startX; j <= endX; ++j) {
-            // Posición del jugadorr 
-            if (i == playerY && j == playerX) {
+    for (int i = startY; i <= endY; ++i) 
+    {
+        for (int j = startX; j <= endX; ++j) 
+        {
+            if (i == playerY && j == playerX)
+            {
                 std::cout << playerSymbol;
             }
-            // Dentro
-            else if (i >= 0 && i < rows && j >= 0 && j < cols) {
-                std::cout << matrix[i][j];
-            }
-            // Fuera
             else {
-                std::cout << ' ';
+
+                bool pedPrinted = false;
+                for (int p = 0; p < numPeds; p++) 
+                {
+                    if (peds[p]->GetIsAlive() &&
+                        peds[p]->GetPos().y == i &&
+                        peds[p]->GetPos().x == j) 
+                    {
+                        std::cout << 'P';
+                        pedPrinted = true;
+                        break;
+                    }
+                }
+
+                if (!pedPrinted) 
+                {
+                    if (i >= 0 && i < rows && j >= 0 && j < cols) 
+                    {
+                        std::cout << matrix[i][j];
+                    }
+                    else
+                    {
+                        std::cout << ' ';
+                    }
+                }
             }
         }
         std::cout << "\n";
     }
-
-    // debug
-    std::cout << "\nPosicion: [" << playerX << ", " << playerY << "]\n";
+    std::cout << "\nDinero CJ: [" << player.GetMoney() << "] | Pulsa ESC para salir" << std::endl;
 }
