@@ -16,12 +16,14 @@ private:
     bool isAlerted;
     float attackTimer; // Para controlar el ataque cada x segundos
 
+    bool isBigSmoke; // el jefe tocho, es pa saber si un peaton lo inicializamos como jefe o no
+
 public:
 
-    People(int startX, int startY, int islandID, int startHealth, int startDamage, bool aggressive)
+    People(int startX, int startY, int islandID, int startHealth, int startDamage, bool aggressive, bool bSmoke = false)
         : pos({ startX, startY }), isAlive(true), isLand(islandID),
         health(startHealth), damage(startDamage), isAggressive(aggressive),
-        isAlerted(false), attackTimer(0.0f) {
+        isAlerted(false), attackTimer(0.0f), isBigSmoke(bSmoke) {
     }
 
     // Getters y Setters
@@ -30,6 +32,7 @@ public:
     int GetIsland() const { return isLand; }
     int GetHealth() const { return health; }
     bool IsAggressive() const { return isAggressive; }
+    bool GetIsBigSmoke() const { return isBigSmoke; }
 
     // Métodos de juego
     void TakeDamage(int amount);

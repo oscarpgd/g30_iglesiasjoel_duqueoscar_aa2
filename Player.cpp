@@ -75,7 +75,7 @@ void Player::Update(char** matrix, int maxRows, int maxCols, People** people, in
     // colisiones
     if (nextY >= 0 && nextY < maxRows && nextX >= 0 && nextX < maxCols) {
 
-        if (matrix[nextY][nextX] != 'X' && matrix[nextY][nextX] != 'T') {
+        if (matrix[nextY][nextX] != 'X') {
 
             if (isInCar && matrix[nextY][nextX] == '$') {
                 return;

@@ -128,7 +128,13 @@ void Map::PrintView(int playerX, int playerY, char playerSymbol, People** peds, 
                 bool pedPrinted = false;
                 for (int p = 0; p < numPeds; p++) {
                     if (peds[p]->GetIsAlive() && peds[p]->GetPos().y == i && peds[p]->GetPos().x == j) {
-                        std::cout << 'P';
+                        // Si es Big Smoke, pintamos una 'B', si no, una 'P'
+                        if (peds[p]->GetIsBigSmoke()) {
+                            std::cout << 'B';
+                        }
+                        else {
+                            std::cout << 'P';
+                        }
                         pedPrinted = true;
                         break;
                     }

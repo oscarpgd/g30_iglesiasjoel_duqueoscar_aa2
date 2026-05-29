@@ -29,4 +29,11 @@ struct GameConfig {
 // Tipos de direcciones
 enum class Direction { UP, DOWN, LEFT, RIGHT };
 
+enum class GameState {
+    INIT,
+    MENU,
+    GAME,
+    GAME_OVER
+};
+
 #endif
