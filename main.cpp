@@ -4,6 +4,7 @@
 #include "Map.h"
 #include "Player.h"
 #include "People.h"
+#include "Car.h"
 
 int main() {
     //INICIALIZACIÓN
@@ -18,17 +19,26 @@ int main() {
         return 1;
     }
 
+    //peatones
     int nLosSantos = gameMap.GetIslandData(0).numPeople;
     int nSanFierro = gameMap.GetIslandData(1).numPeople;
     int totalPeople = nLosSantos + nSanFierro;
-
+    
     People** people = new People * [totalPeople];
+
+    //Cochces
+    int carsInSanFierro = gameMap.GetIslandData(0).numOfCars;
+    int carsInLosSantos = gameMap.GetIslandData(1).numOfCars;
+    int carsInLasVenturas = gameMap.GetIslandData(2).numOfCars;
+    int totalCars = carsInLosSantos + carsInSanFierro + carsInLasVenturas;
+    Car** cars = new Car * [totalCars];
+    int carIndex = 0;
 
     // Cálculo del ancho de cada cuadrante (isla) 
     // Asumiendo que cols es el ancho total de las 3 islas
     int islandWidth = gameMap.GetCols() / 3;
 
-    //Spawn de los santos
+    //Spawn de peatones - los santos
     for (int i = 0; i < nLosSantos; i++) 
     {
         int rx = rand() % (islandWidth - 2) + 1; // Dentro de los límites de la 1a isla
@@ -36,7 +46,7 @@ int main() {
         people[i] = new People(rx, ry, 0); //id 2
     }
 
-    //Spanw de san fierro
+    //Spanw de peatones - san fierro 
     for (int i = nLosSantos; i < totalPeople; i++) 
     {
         int rx = rand() % (islandWidth - 2) + islandWidth + 1; //salto de la primera pared
@@ -44,7 +54,31 @@ int main() {
         people[i] = new People(rx, ry, 1); //id 1
     }
 
+    //COChes
+    // Los Santos
+    for (int i = 0; i < carsInLosSantos; i++) {
+        int rx = rand() % (islandWidth - 2) + 1;
+        int ry = rand() % (gameMap.GetRows() - 2) + 1;
+        cars[carIndex++] = new Car(rx, ry, 0);
+    }
+
+    // San Fierro
+    for (int i = 0; i < carsInSanFierro; i++) {
+        int rx = rand() % (islandWidth - 2) + islandWidth + 1;
+        int ry = rand() % (gameMap.GetRows() - 2) + 1;
+        cars[carIndex++] = new Car(rx, ry, 1);
+    }
+
+    //las venturas
+    for (int i = 0; i < carsInLasVenturas; i++) {
+        int rx = rand() % (islandWidth - 2) + islandWidth * 2 + 2;
+        int ry = rand() % (gameMap.GetRows() - 2) + 1;
+        cars[carIndex++] = new Car(rx, ry, 2);
+    }
+    
+
     Player cj(5, 5); //posicion x e y
+    //cj.AddMoney(10000);
 
     //BUCLE PRINCIPAL
     while (true) {
@@ -52,13 +86,34 @@ int main() {
         
         system("cls");
         //Update de cj
-        cj.Update(gameMap.GetMatrix(), gameMap.GetRows(), gameMap.GetCols(), people, totalPeople);
+        cj.Update(gameMap.GetMatrix(), gameMap.GetRows(), gameMap.GetCols(), people, totalPeople, cars, totalCars);
         Vec2 cjPos = { cj.GetX(), cj.GetY() };
 
         //Actualizar peatones
         for (int i = 0; i < totalPeople; i++) 
         {
             people[i]->Update(gameMap.GetMatrix(), gameMap.GetRows(), gameMap.GetCols(), cjPos);
+        }
+
+        //Atropellar peatones
+        for (int i = 0; i < totalPeople; i++) 
+        {
+            // Atropello automático si vas en coche
+            if (cj.IsInCar() && people[i]->GetIsAlive()) {
+                Vec2 pPos = people[i]->GetPos();
+                if (abs(pPos.x - cj.GetX()) <= 1 && abs(pPos.y - cj.GetY()) <= 1) {
+                    people[i]->Die(gameMap.GetMatrix());
+
+                    int island = people[i]->GetIsland();
+                    int offset = (island == 0) ? 0 : (gameMap.GetCols() / 3) + 1;
+                    int iWidth = gameMap.GetCols() / 3;
+
+                    delete people[i];
+                    people[i] = new People(rand() % (iWidth - 2) + offset + 1,
+                        rand() % (gameMap.GetRows() - 2) + 1,
+                        island);
+                }
+            }
         }
 
         //Recorre todos los peatones y comprueba su estado + Regen
@@ -86,9 +141,34 @@ int main() {
                 }
             }
         }
+        //abrir peajes
+        //Peaje 1
+        int wall1 = gameMap.GetCols() / 3;
+        int bridgeRow = gameMap.GetRows() / 2;
+        if (!gameMap.IsTollOnePaid() && cj.GetY() == bridgeRow && cj.GetX() == wall1) 
+        {
+            int price = gameMap.GetTollOnePrice();
+            if (cj.GetMoney() >= price) 
+            {
+                cj.AddMoney(-price); 
+                gameMap.UnlockToll_one();
+            }
+            
+        }
+        // Peaje 2 - entre San Fierro y Las Venturas
+        int wall2 = (gameMap.GetCols() / 3) * 2 + 1;
+        if (!gameMap.IsTollTwoPaid() && cj.GetY() == bridgeRow && cj.GetX() == wall2) 
+        {
+            int price = gameMap.GetTollTwoPrice();
+            if (cj.GetMoney() >= price) 
+            {
+                cj.AddMoney(-price);
+                gameMap.UnlockToll_two();
+            }
+        }
 
         //Gestión del dinero
-        if (gameMap.GetMatrix()[cj.GetY()][cj.GetX()] == '$') 
+        if (!cj.IsInCar() && gameMap.GetMatrix()[cj.GetY()][cj.GetX()] == '$') 
         {
             //Identificar isla para maxMoney
             int islandIndex = 0;
@@ -113,7 +193,7 @@ int main() {
         }
 
         //vista horizontal
-        gameMap.PrintView(cj.GetX(), cj.GetY(), cj.GetSymbol(), people, totalPeople, cj);
+        gameMap.PrintView(cj.GetX(), cj.GetY(), cj.GetSymbol(), people, totalPeople, cj, cars, totalCars);
         Sleep(100);
     }
 
@@ -122,6 +202,9 @@ int main() {
         delete people[i];
     }
     delete[] people;
+
+    for (int i = 0; i < totalCars; i++) delete cars[i];
+    delete[] cars;
 
     return 0;
 }

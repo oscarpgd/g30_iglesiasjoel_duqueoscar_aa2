@@ -1,7 +1,7 @@
 #include "Map.h"
 #include <Windows.h>
 
-Map::Map() : matrix(nullptr), rows(0), cols(0) {}
+Map::Map() : matrix(nullptr), rows(0), cols(0), toll_onePaid(false), toll_twoPaid(false) {}
 
 Map::~Map() {
     if (matrix != nullptr) {
@@ -22,6 +22,10 @@ bool Map::LoadConfig(const std::string& filename) {
     std::getline(file, val, ';'); cols = std::stoi(val);
     std::getline(file, val, ';'); rows = std::stoi(val);
 
+    //linea 2 (precios de peaje) cambiar más adelante
+    std::getline(file, val, ';'); gameConfig.toll_onePrice = std::stoi(val);
+    std::getline(file, val, ';'); gameConfig.toll_twoPrice = std::stoi(val);
+
     //info isla 1
     std::getline(file, val, ';'); islands[0].numPeople = std::stoi(val);
     std::getline(file, val, ';'); islands[0].price = std::stoi(val);
@@ -33,6 +37,12 @@ bool Map::LoadConfig(const std::string& filename) {
     std::getline(file, val, ';'); islands[1].maxMoneyPerPeo = std::stoi(val);
     //USo de stoi para convertir string a int
 
+    //Linea 4 q más adelante será la última: Coches
+    std::getline(file, val, ';'); islands[0].numOfCars = std::stoi(val);
+    std::getline(file, val, ';'); islands[1].numOfCars = std::stoi(val);
+    std::getline(file, val, ';'); islands[2].numOfCars = std::stoi(val);
+
+
     file.close();
     InitMatrix();
     return true;
@@ -41,7 +51,7 @@ bool Map::LoadConfig(const std::string& filename) {
 void Map::InitMatrix() {
     // Hacemos un x3 porque en ancho son 3 islas puestas al lado, en largo da igual porque abajo no hay
     int realCols = (cols * 3) + 2;
-
+   
     matrix = new char* [rows];
     for (int i = 0; i < rows; ++i) {
         matrix[i] = new char[realCols];
@@ -66,8 +76,8 @@ void Map::InitMatrix() {
 
     // Puentes
     int bridgePos = rows / 2;
-    matrix[bridgePos][wall1] = ' ';
-    matrix[bridgePos][wall2] = ' '; 
+    matrix[bridgePos][wall1] = 'o';
+    matrix[bridgePos][wall2] = 'o'; 
 
         
     this->cols = realCols;
@@ -86,7 +96,7 @@ void Map::PrintFullMap()
     }
 }
 
-void Map::PrintView(int playerX, int playerY, char playerSymbol, People** peds, int numPeds, Player player) 
+void Map::PrintView(int playerX, int playerY, char playerSymbol, People** peds, int numPeds, Player player, Car** cars, int numCars) 
 {
     int radiusY = 8;  // Alto de la vista
     int radiusX = 15; // Ancho de la vista
@@ -101,6 +111,19 @@ void Map::PrintView(int playerX, int playerY, char playerSymbol, People** peds, 
     {
         for (int j = startX; j <= endX; ++j) 
         {
+            //Coches
+            bool carPrinted = false;
+            for (int c = 0; c < numCars; c++) {
+                if (!cars[c]->IsOccupied() && cars[c]->GetPos().y == i && cars[c]->GetPos().x == j)
+                {
+                    std::cout << 'C';
+                    carPrinted = true;
+                    break;
+                }
+            }
+            if (carPrinted) continue;
+
+            //PEatones
             if (i == playerY && j == playerX)
             {
                 std::cout << playerSymbol;
@@ -136,4 +159,18 @@ void Map::PrintView(int playerX, int playerY, char playerSymbol, People** peds, 
         std::cout << "\n";
     }
     std::cout << "\nDinero CJ: [" << player.GetMoney() << "] | Pulsa ESC para salir" << std::endl;
+}
+
+void Map::UnlockToll_one() {
+    toll_onePaid = true;
+    int bridgePos = rows / 2;
+    int wall1 = cols / 3;      
+    matrix[bridgePos][wall1] = ' ';
+}
+
+void Map::UnlockToll_two() {
+    toll_twoPaid = true;
+    int bridgePos = rows / 2;
+    int wall2 = (cols / 3) * 2 + 1;
+    matrix[bridgePos][wall2] = ' ';
 }

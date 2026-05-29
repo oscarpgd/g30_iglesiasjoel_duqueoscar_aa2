@@ -11,12 +11,15 @@ struct IslandConfig {
     int numPeople;
     int price;
     int maxMoneyPerPeo;
+    int numOfCars;
 };
 
 // Guarda las dimensions del mapa
 struct GameConfig {
     int width, height;
     IslandConfig islands[2];
+    int toll_onePrice;
+    int toll_twoPrice;
 };
 
 // Tipos de direcciones

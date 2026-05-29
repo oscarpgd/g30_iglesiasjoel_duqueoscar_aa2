@@ -13,6 +13,10 @@ private:
     int rows;           
     int cols;
     IslandConfig islands[2];
+    int numOfCars;
+    GameConfig gameConfig;
+    bool toll_onePaid;
+    bool toll_twoPaid;
 
 public:
     Map();
@@ -29,8 +33,18 @@ public:
     int GetCols() const { return cols; }
     char** GetMatrix() { return matrix; }
     IslandConfig GetIslandData(int index) const { return islands[index]; }
+    int GetCars() { return numOfCars; }
 
-    void PrintView(int playerX, int playerY, char playerSymbol, People** peds, int numPeds, Player player);
+    //Peaje
+    void UnlockToll_one();
+    void UnlockToll_two();
+
+    int GetTollOnePrice() const { return gameConfig.toll_onePrice; }
+    int GetTollTwoPrice() const { return gameConfig.toll_twoPrice; }
+    bool IsTollOnePaid() const { return toll_onePaid; }
+    bool IsTollTwoPaid() const { return toll_twoPaid; }
+
+    void PrintView(int playerX, int playerY, char playerSymbol, People** peds, int numPeds, Player player, Car** cars, int numCars);
 };
 
 #endif

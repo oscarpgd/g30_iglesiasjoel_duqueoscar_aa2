@@ -1,0 +1,51 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json",
+  "runs": [
+    {
+      "results": [],
+      "tool": {
+        "driver": {
+          "name": "PREfast",
+          "fullName": "MSVC Code Analysis",
+          "version": "14.44.35227.0",
+          "informationUri": "https://aka.ms/cpp/ca"
+        }
+      },
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ],
+      "artifacts": [
+        {
+          "location": {
+            "uri": "file:///d:/documentos ------/z_enti/2o/manish/g30_iglesiasjoel_duqueoscar_aa2/people.cpp"
+          },
+          "roles": [
+            "analysisTarget"
+          ],
+          "hashes": {
+            "sha-256": "9d74adf06da81975f2ebb9063099bac8ea379d2416bf3699e9a03724e3d1455b"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///d:/documentos ------/z_enti/2o/manish/g30_iglesiasjoel_duqueoscar_aa2/people.h"
+          },
+          "hashes": {
+            "sha-256": "7811d8cb0bf62012a5e4f13e3fb1ec8e991965ab2a06396999a4ffdc35206b2e"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///d:/documentos ------/z_enti/2o/manish/g30_iglesiasjoel_duqueoscar_aa2/types.h"
+          },
+          "hashes": {
+            "sha-256": "f23b6ccf67ae35bc675c46230f1ade8f51f524cb99070c7841ac2c501d69dd0c"
+          }
+        }
+      ]
+    }
+  ]
+}
