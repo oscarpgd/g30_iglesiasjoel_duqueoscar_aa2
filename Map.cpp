@@ -37,10 +37,7 @@ bool Map::LoadConfig(const std::string& filename) {
     std::getline(file, val, ';'); islands[1].maxMoneyPerPeo = std::stoi(val);
     //USo de stoi para convertir string a int
 
-    //Linea 4 q más adelante será la última: Coches
-    std::getline(file, val, ';'); islands[0].numOfCars = std::stoi(val);
-    std::getline(file, val, ';'); islands[1].numOfCars = std::stoi(val);
-    std::getline(file, val, ';'); islands[2].numOfCars = std::stoi(val);
+
 
 
     file.close();

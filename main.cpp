@@ -27,9 +27,10 @@ int main() {
     People** people = new People * [totalPeople];
 
     //Cochces
-    int carsInSanFierro = gameMap.GetIslandData(0).numOfCars;
-    int carsInLosSantos = gameMap.GetIslandData(1).numOfCars;
-    int carsInLasVenturas = gameMap.GetIslandData(2).numOfCars;
+    const int carsInLosSantos = 3;
+    const int carsInSanFierro = 2;
+    const int carsInLasVenturas = 4;
+
     int totalCars = carsInLosSantos + carsInSanFierro + carsInLasVenturas;
     Car** cars = new Car * [totalCars];
     int carIndex = 0;
