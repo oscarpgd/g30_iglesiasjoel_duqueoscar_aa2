@@ -9,10 +9,10 @@
 
 class Map {
 private:
-    char** matrix;     
-    int rows;           
+    char** matrix;
+    int rows;
     int cols;
-    IslandConfig islands[2];
+    IslandConfig islands[3]; 
     int numOfCars;
     GameConfig gameConfig;
     bool toll_onePaid;
@@ -23,19 +23,19 @@ public:
     ~Map();
 
     bool LoadConfig(const std::string& filename);
-
     void InitMatrix();
-
     void PrintFullMap();
 
-    //Geters
+    // Getters básicos
     int GetRows() const { return rows; }
     int GetCols() const { return cols; }
     char** GetMatrix() { return matrix; }
     IslandConfig GetIslandData(int index) const { return islands[index]; }
     int GetCars() { return numOfCars; }
+    int GetCjMaxHealth() const { return gameConfig.cjMaxHealth; }
+    int GetCjAttack() const { return gameConfig.cjAttack; }
 
-    //Peaje
+    // Peajes
     void UnlockToll_one();
     void UnlockToll_two();
 
